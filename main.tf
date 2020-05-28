@@ -32,7 +32,7 @@ resource "kubernetes_secret" "sdm_gateway_token" {
     token = sdm_node.gateway.gateway.0.token
   }
 }
-resource "kubernetes_deployment" "sdm_gateway" {
+resource "kubernetes_pod" "sdm_gateway" {
   metadata {
     name = var.sdm_gateway_name
     labels = {
@@ -40,45 +40,30 @@ resource "kubernetes_deployment" "sdm_gateway" {
     }
   }
   spec {
-    replicas = 1
-    selector {
-      match_labels = {
-        app = var.sdm_app_name
+    container {
+      image             = "quay.io/sdmrepo/relay:latest"
+      image_pull_policy = "Always"
+      name              = var.sdm_app_name
+      env {
+        name  = "SDM_ORCHESTRATOR_PROBES"
+        value = ":9090"
       }
-    }
-    template {
-      metadata {
-        labels = {
-          app = var.sdm_app_name
+      env {
+        name = "SDM_RELAY_TOKEN"
+        value_from {
+          secret_key_ref {
+            key  = "token"
+            name = kubernetes_secret.sdm_gateway_token.metadata.0.name
+          }
         }
       }
-      spec {
-        container {
-          image             = "quay.io/sdmrepo/relay:latest"
-          image_pull_policy = "Always"
-          name              = var.sdm_app_name
-          env {
-            name  = "SDM_ORCHESTRATOR_PROBES"
-            value = ":9090"
-          }
-          env {
-            name = "SDM_RELAY_TOKEN"
-            value_from {
-              secret_key_ref {
-                key  = "token"
-                name = kubernetes_secret.sdm_gateway_token.metadata.0.name
-              }
-            }
-          }
-          liveness_probe {
-            http_get {
-              path = "/liveness"
-              port = 9090
-            }
-            initial_delay_seconds = 5
-            period_seconds        = 10
-          }
+      liveness_probe {
+        http_get {
+          path = "/liveness"
+          port = 9090
         }
+        initial_delay_seconds = 5
+        period_seconds        = 10
       }
     }
   }
