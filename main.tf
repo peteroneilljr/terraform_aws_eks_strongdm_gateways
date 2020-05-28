@@ -20,7 +20,7 @@ resource "kubernetes_service" "sdm_gateway_hostname" {
 resource "sdm_node" "gateway" {
   gateway {
     name           = var.sdm_gateway_name
-    listen_address = "${kubernetes_service.sdm_gateway_hostname.load_balancer_ingress.0.hostname}:${var.sdm_port}"
+    listen_address = "${coalesce(kubernetes_service.sdm_gateway_hostname.load_balancer_ingress.0.hostname, kubernetes_service.sdm_gateway_hostname.load_balancer_ingress.0.ip)}:${var.sdm_port}"
   }
 }
 resource "kubernetes_secret" "sdm_gateway_token" {
