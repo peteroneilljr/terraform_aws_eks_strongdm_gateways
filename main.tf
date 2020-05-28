@@ -1,7 +1,5 @@
 
 resource "kubernetes_service" "sdm_gateway_hostname" {
-  provider = var.provider_name
-
   metadata {
     name = var.sdm_gateway_name
     labels = {
@@ -26,8 +24,6 @@ resource "sdm_node" "gateway" {
   }
 }
 resource "kubernetes_secret" "sdm_gateway_token" {
-  provider = var.provider_name
-
   metadata {
     name = "${var.sdm_gateway_name}-token"
   }
@@ -37,8 +33,6 @@ resource "kubernetes_secret" "sdm_gateway_token" {
   }
 }
 resource "kubernetes_deployment" "sdm_gateway" {
-  provider = var.provider_name
-  
   metadata {
     name = var.sdm_gateway_name
     labels = {

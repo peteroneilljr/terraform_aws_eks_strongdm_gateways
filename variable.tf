@@ -11,8 +11,3 @@ variable "sdm_gateway_name" {
   description = "Logical name for the strongDM gateway"
   type = string
 }
-variable "provider_name" {
-  description = "specify a specific provider"
-  type = string
-  default = null
-}
