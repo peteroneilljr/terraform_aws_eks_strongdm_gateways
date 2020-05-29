@@ -21,3 +21,8 @@ variable "gateway_count" {
   description = "Number of strongDM gateways to create"
   default     = 1
 }
+variable "dev_mode" {
+  type        = bool
+  description = "Create pods with a lower resource request for testing"
+  default     = false
+}
