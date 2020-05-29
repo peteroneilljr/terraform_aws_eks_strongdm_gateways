@@ -81,7 +81,7 @@ resource "kubernetes_deployment" "sdm_gateway" {
           resources {
             requests {
               cpu    = var.dev_mode ? "500m" : "2000m"
-              memory = var.dev_mode ? "1000Mib" : "4000Mib"
+              memory = var.dev_mode ? "1000Mi" : "4000Mi"
             }
           }
           env {
