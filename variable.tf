@@ -12,12 +12,12 @@ variable "sdm_gateway_name" {
   type        = string
 }
 variable "namespace" {
-  type = "string"
-  description = "describe your variable"
-  default = "sdm-gateway"
+  type        = string
+  description = "Namespace used to seperate strongDM gateways"
+  default     = "sdm-gateway"
 }
 variable "gateway_count" {
-  type = number
-  description = "describe your variable"
-  default = 1
+  type        = number
+  description = "Number of strongDM gateways to create"
+  default     = 1
 }

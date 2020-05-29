@@ -3,7 +3,7 @@ resource "kubernetes_service" "sdm_gateway_hostname" {
   count = var.gateway_count
 
   metadata {
-    name = var.sdm_gateway_name
+    name      = var.sdm_gateway_name
     namespace = "${var.namespace}-${count.index}"
     labels = {
       app = var.sdm_app_name
@@ -25,25 +25,25 @@ resource "sdm_node" "gateway" {
 
   gateway {
     name           = "${var.sdm_gateway_name}-${count.index}"
-    listen_address = "${coalesce(kubernetes_service.sdm_gateway_hostname.load_balancer_ingress.0.hostname, kubernetes_service.sdm_gateway_hostname.load_balancer_ingress.0.ip)}:${var.sdm_port}"
+    listen_address = "${coalesce(kubernetes_service.sdm_gateway_hostname[count.index].load_balancer_ingress.0.hostname, kubernetes_service.sdm_gateway_hostname[count.index].load_balancer_ingress.0.ip)}:${var.sdm_port}"
   }
 }
 resource "kubernetes_secret" "sdm_gateway_token" {
   count = var.gateway_count
 
   metadata {
-    name = "${var.sdm_gateway_name}-token"
+    name      = "${var.sdm_gateway_name}-token"
     namespace = "${var.namespace}-${count.index}"
   }
   type = "Opaque"
   data = {
-    token = sdm_node.gateway.gateway.0.token
+    token = sdm_node.gateway.gateway[count.index].0.token
   }
 }
 resource "kubernetes_pod" "sdm_gateway" {
   count = var.gateway_count
   metadata {
-    name = var.sdm_gateway_name
+    name      = var.sdm_gateway_name
     namespace = "${var.namespace}-${count.index}"
     labels = {
       app = var.sdm_app_name
@@ -63,7 +63,7 @@ resource "kubernetes_pod" "sdm_gateway" {
         value_from {
           secret_key_ref {
             key  = "token"
-            name = kubernetes_secret.sdm_gateway_token.metadata.0.name
+            name = kubernetes_secret.sdm_gateway_token[count.index].metadata.0.name
           }
         }
       }
