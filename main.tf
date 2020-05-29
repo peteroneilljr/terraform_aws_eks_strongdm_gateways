@@ -1,10 +1,18 @@
+resource "kubernetes_namespace" "sdm_gateway" {
+  metadata {
+    name = var.namespace
+    labels = {
+      app = var.sdm_app_name
+    }
+  }
+}
 
-resource "kubernetes_service" "sdm_gateway_hostname" {
+resource "kubernetes_service" "sdm_gateway" {
   count = var.gateway_count
 
   metadata {
-    name      = var.sdm_gateway_name
-    namespace = "${var.namespace}-${count.index}"
+    name      = "${var.sdm_gateway_name}-${count.index}"
+    namespace = kubernetes_namespace.sdm_gateway.id
     labels = {
       app = var.sdm_app_name
     }
@@ -16,24 +24,24 @@ resource "kubernetes_service" "sdm_gateway_hostname" {
     port {
       port = var.sdm_port
     }
-
     type = "LoadBalancer"
   }
 }
+
 resource "sdm_node" "gateway" {
   count = var.gateway_count
 
   gateway {
     name           = "${var.sdm_gateway_name}-${count.index}"
-    listen_address = "${coalesce(kubernetes_service.sdm_gateway_hostname[count.index].load_balancer_ingress.0.hostname, kubernetes_service.sdm_gateway_hostname[count.index].load_balancer_ingress.0.ip)}:${var.sdm_port}"
+    listen_address = "${coalesce(kubernetes_service.sdm_gateway[count.index].load_balancer_ingress.0.hostname, kubernetes_service.sdm_gateway[count.index].load_balancer_ingress.0.ip)}:${var.sdm_port}"
   }
 }
-resource "kubernetes_secret" "sdm_gateway_token" {
+resource "kubernetes_secret" "sdm_gateway" {
   count = var.gateway_count
 
   metadata {
-    name      = "${var.sdm_gateway_name}-token"
-    namespace = "${var.namespace}-${count.index}"
+    name      = "${var.sdm_gateway_name}-${count.index}"
+    namespace = kubernetes_namespace.sdm_gateway.id
   }
   type = "Opaque"
   data = {
@@ -42,9 +50,10 @@ resource "kubernetes_secret" "sdm_gateway_token" {
 }
 resource "kubernetes_pod" "sdm_gateway" {
   count = var.gateway_count
+
   metadata {
-    name      = var.sdm_gateway_name
-    namespace = "${var.namespace}-${count.index}"
+    name      = "${var.sdm_gateway_name}-${count.index}"
+    namespace = kubernetes_namespace.sdm_gateway.id
     labels = {
       app = var.sdm_app_name
     }
@@ -63,7 +72,7 @@ resource "kubernetes_pod" "sdm_gateway" {
         value_from {
           secret_key_ref {
             key  = "token"
-            name = kubernetes_secret.sdm_gateway_token[count.index].metadata.0.name
+            name = kubernetes_secret.sdm_gateway[count.index].metadata.0.name
           }
         }
       }
