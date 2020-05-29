@@ -37,7 +37,7 @@ resource "kubernetes_secret" "sdm_gateway_token" {
   }
   type = "Opaque"
   data = {
-    token = sdm_node.gateway.gateway[count.index].0.token
+    token = sdm_node.gateway[count.index].gateway.0.token
   }
 }
 resource "kubernetes_pod" "sdm_gateway" {
