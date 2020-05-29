@@ -11,3 +11,13 @@ variable "sdm_gateway_name" {
   description = "Logical name for the strongDM gateway"
   type        = string
 }
+variable "namespace" {
+  type = "string"
+  description = "describe your variable"
+  default = "sdm-gateway"
+}
+variable "gateway_count" {
+  type = number
+  description = "describe your variable"
+  default = 1
+}

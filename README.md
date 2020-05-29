@@ -8,6 +8,8 @@ module "aws_eks_sdm_gateway" {
   sdm_port = 5000
   sdm_app_name = "sdm-gateway"
   sdm_gateway_name = "aws-eks-gateway"
+  gateway_count = 1
+  namespace = "sdm-gateway"
 
   providers = {
     kubernetes = "kubernetes.eks"

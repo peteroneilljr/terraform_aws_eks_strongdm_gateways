@@ -1,7 +1,10 @@
 
 resource "kubernetes_service" "sdm_gateway_hostname" {
+  count = var.gateway_count
+
   metadata {
     name = var.sdm_gateway_name
+    namespace = "${var.namespace}-${count.index}"
     labels = {
       app = var.sdm_app_name
     }
@@ -18,14 +21,19 @@ resource "kubernetes_service" "sdm_gateway_hostname" {
   }
 }
 resource "sdm_node" "gateway" {
+  count = var.gateway_count
+
   gateway {
-    name           = var.sdm_gateway_name
+    name           = "${var.sdm_gateway_name}-${count.index}"
     listen_address = "${coalesce(kubernetes_service.sdm_gateway_hostname.load_balancer_ingress.0.hostname, kubernetes_service.sdm_gateway_hostname.load_balancer_ingress.0.ip)}:${var.sdm_port}"
   }
 }
 resource "kubernetes_secret" "sdm_gateway_token" {
+  count = var.gateway_count
+
   metadata {
     name = "${var.sdm_gateway_name}-token"
+    namespace = "${var.namespace}-${count.index}"
   }
   type = "Opaque"
   data = {
@@ -33,8 +41,10 @@ resource "kubernetes_secret" "sdm_gateway_token" {
   }
 }
 resource "kubernetes_pod" "sdm_gateway" {
+  count = var.gateway_count
   metadata {
     name = var.sdm_gateway_name
+    namespace = "${var.namespace}-${count.index}"
     labels = {
       app = var.sdm_app_name
     }
