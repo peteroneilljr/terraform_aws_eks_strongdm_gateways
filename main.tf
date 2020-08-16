@@ -1,5 +1,5 @@
 resource "kubernetes_namespace" "sdm_gateway" {
-  count = var.gateway_count > 0 ? var.gateway_count:0
+  count = var.gateway_count > 0 ? 1:0
   metadata {
     name = var.namespace
     labels = {
