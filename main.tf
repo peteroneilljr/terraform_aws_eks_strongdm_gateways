@@ -13,7 +13,7 @@ resource "kubernetes_service" "sdm_gateway" {
 
   metadata {
     name      = "${var.sdm_gateway_name}-${count.index}"
-    namespace = kubernetes_namespace.sdm_gateway.id
+    namespace = kubernetes_namespace.sdm_gateway[0].id
     labels = {
       app = var.sdm_app_name
     }
@@ -42,7 +42,7 @@ resource "kubernetes_secret" "sdm_gateway" {
 
   metadata {
     name      = "${var.sdm_gateway_name}-${count.index}"
-    namespace = kubernetes_namespace.sdm_gateway.id
+    namespace = kubernetes_namespace.sdm_gateway[0].id
   }
   type = "Opaque"
   data = {
@@ -54,7 +54,7 @@ resource "kubernetes_deployment" "sdm_gateway" {
 
   metadata {
     name      = "${var.sdm_gateway_name}-${count.index}"
-    namespace = kubernetes_namespace.sdm_gateway.id
+    namespace = kubernetes_namespace.sdm_gateway[0].id
     labels = {
       app = var.sdm_app_name
     }
