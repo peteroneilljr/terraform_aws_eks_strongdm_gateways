@@ -1,4 +1,5 @@
 resource "kubernetes_namespace" "sdm_gateway" {
+  count = var.gateway_count > 0 ? var.gateway_count:0
   metadata {
     name = var.namespace
     labels = {
@@ -80,8 +81,8 @@ resource "kubernetes_deployment" "sdm_gateway" {
           name              = var.sdm_app_name
           resources {
             requests {
-              cpu    = var.dev_mode ? "500m" : "2000m"
-              memory = var.dev_mode ? "1000Mi" : "4000Mi"
+              cpu    = var.dev_mode ? "200m" : "2000m"
+              memory = var.dev_mode ? "400Mi" : "4000Mi"
             }
           }
           env {
