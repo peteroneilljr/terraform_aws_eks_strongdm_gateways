@@ -13,7 +13,7 @@ resource "kubernetes_service" "sdm_gateway" {
 
   metadata {
     name      = "${var.sdm_gateway_name}-${count.index}"
-    namespace = kubernetes_namespace.sdm_gateway[0].id
+    namespace = var.namespace
     labels = {
       app = var.sdm_app_name
     }
@@ -30,6 +30,9 @@ resource "kubernetes_service" "sdm_gateway" {
     }
     type = var.expose_on_node_port ? "NodePort" : "LoadBalancer"
   }
+  depends_on = [
+    kubernetes_namespace.sdm_gateway
+  ]
 }
 
 resource "sdm_node" "gateway" {
@@ -45,7 +48,7 @@ resource "kubernetes_secret" "sdm_gateway" {
 
   metadata {
     name      = "${var.sdm_gateway_name}-${count.index}"
-    namespace = kubernetes_namespace.sdm_gateway[0].id
+    namespace = var.namespace
   }
   type = "Opaque"
   data = {
@@ -57,7 +60,7 @@ resource "kubernetes_deployment" "sdm_gateway" {
 
   metadata {
     name      = "${var.sdm_gateway_name}-${count.index}"
-    namespace = kubernetes_namespace.sdm_gateway[0].id
+    namespace = var.namespace
     labels = {
       app = var.sdm_app_name
     }
@@ -84,8 +87,8 @@ resource "kubernetes_deployment" "sdm_gateway" {
           name              = var.sdm_app_name
           resources {
             requests {
-              cpu    = var.dev_mode ? null : "2000m"
-              memory = var.dev_mode ? null : "4000Mi"
+              cpu    = var.dev_mode ? "0m" : "2000m"
+              memory = var.dev_mode ? "0Mi" : "4000Mi"
             }
           }
           env {
