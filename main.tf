@@ -23,9 +23,12 @@ resource "kubernetes_service" "sdm_gateway" {
       app = var.sdm_app_name
     }
     port {
-      port = var.sdm_port
+      port = var.expose_on_node_port ? "500${count.index}" : var.sdm_port
+      protocol = "TCP"
+      target_port = var.sdm_port
+
     }
-    type = "LoadBalancer"
+    type = var.expose_on_node_port ? "NodePort" : "LoadBalancer"
   }
 }
 
@@ -34,7 +37,7 @@ resource "sdm_node" "gateway" {
 
   gateway {
     name           = "${var.sdm_gateway_name}-${count.index}"
-    listen_address = "${coalesce(kubernetes_service.sdm_gateway[count.index].load_balancer_ingress.0.hostname, kubernetes_service.sdm_gateway[count.index].load_balancer_ingress.0.ip)}:${var.sdm_port}"
+    listen_address = var.expose_on_node_port ? "${kubernetes_service.sdm_gateway[count.index].spec.0.cluster_ip}:500${count.index}" : "${coalesce(kubernetes_service.sdm_gateway[count.index].load_balancer_ingress.0.hostname, kubernetes_service.sdm_gateway[count.index].load_balancer_ingress.0.ip)}:${var.sdm_port}"
   }
 }
 resource "kubernetes_secret" "sdm_gateway" {
@@ -81,8 +84,8 @@ resource "kubernetes_deployment" "sdm_gateway" {
           name              = var.sdm_app_name
           resources {
             requests {
-              cpu    = var.dev_mode ? "200m" : "2000m"
-              memory = var.dev_mode ? "400Mi" : "4000Mi"
+              cpu    = var.dev_mode ? null : "2000m"
+              memory = var.dev_mode ? null : "4000Mi"
             }
           }
           env {

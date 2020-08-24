@@ -26,3 +26,8 @@ variable "dev_mode" {
   description = "Create pods with a lower resource request for testing"
   default     = false
 }
+variable "expose_on_node_port" {
+  type        = bool
+  description = "Exposes gateways on the node's IP instead of creating a load balancer"
+  default     = false
+}
