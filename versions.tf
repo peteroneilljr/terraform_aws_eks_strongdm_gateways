@@ -1,9 +1,18 @@
 terraform {
-  required_version = "> 0.12.24"
+  required_version = ">= 0.13"
 
   required_providers {
-    aws        = "~> 2.53"
-    sdm        = "~> 1.0"
-    kubernetes = "~> 1.11"
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 2.53"
+    }
+    sdm = {
+      source  = "terraform-providers/sdm"
+      version = "~> 1.0"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 1.11"
+    }
   }
 }
