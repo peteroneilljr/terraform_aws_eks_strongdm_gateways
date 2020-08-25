@@ -27,7 +27,7 @@ module "aws_eks_sdm_gateway" {
   sdm_gateway_name = "aws-eks-gateway"
   gateway_count = 1
   namespace = "sdm-gateway"
-
+  resources_depends_on = resource.resource
   dev_mode = false
 
   providers = {
