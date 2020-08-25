@@ -7,8 +7,8 @@ terraform {
       version = "~> 2.53"
     }
     sdm = {
-      source  = "terraform-providers/sdm"
-      version = "~> 1.0"
+      source = "strongdm/sdm"
+      version = "1.0.8"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
