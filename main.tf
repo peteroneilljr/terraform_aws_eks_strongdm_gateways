@@ -6,7 +6,6 @@ resource "kubernetes_namespace" "sdm_gateway" {
       app = var.sdm_app_name
     }
   }
-  depends_on = [var.resources_depends_on]
 }
 
 resource "kubernetes_service" "sdm_gateway" {

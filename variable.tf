@@ -31,8 +31,3 @@ variable "expose_on_node_port" {
   description = "Exposes gateways on the node's IP instead of creating a load balancer"
   default     = false
 }
-variable "resources_depends_on" {
-  type        = any
-  description = "Used to create a dependcy on resources created in other modules"
-  default     = null
-}
