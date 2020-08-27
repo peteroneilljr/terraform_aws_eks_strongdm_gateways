@@ -84,7 +84,7 @@ resource "kubernetes_deployment" "sdm_gateway" {
         container {
           image             = "quay.io/sdmrepo/relay:latest"
           image_pull_policy = "Always"
-          name              = var.sdm_app_name
+          name              = var.sdm_gateway_name
           resources {
             requests {
               cpu    = var.dev_mode ? "0m" : "2000m"
